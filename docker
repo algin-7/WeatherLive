@@ -1,0 +1,17 @@
+# Use a lightweight Nginx image
+FROM nginx:alpine
+
+# Remove default static files
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy your WeatherLive dashboard files
+COPY index.html /usr/share/nginx/html/
+COPY style.css /usr/share/nginx/html/
+COPY app.js /usr/share/nginx/html/
+
+# Healthcheck: Ensures the web server is actually serving the page
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget -q -O /dev/null http://localhost/ || exit 1
+
+# Expose port 80 for the Nginx server
+EXPOSE 80

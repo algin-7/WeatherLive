@@ -1,0 +1,202 @@
+:root {
+    --bg-dark: #121212;
+    --text-main: #f5f5f5;
+    --text-muted: #a0a0a0;
+    --card-gradient: linear-gradient(135deg, #3f1982 0%, #990f4b 100%);
+    --card-bg: #1e1e1e;
+    --accent: #eab308;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Header & Search */
+header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.text-warning { color: var(--accent); }
+
+.search-container {
+    flex: 1;
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+input {
+    width: 100%;
+    background-color: var(--card-bg);
+    border: 1px solid #333;
+    color: white;
+    padding: 12px 12px 12px 40px;
+    border-radius: 20px;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+input:focus { border-color: #555; }
+
+.icon-btn {
+    background-color: var(--card-bg);
+    border: 1px solid #333;
+    color: white;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.2s;
+}
+.icon-btn:hover { background-color: #333; }
+.refresh-btn { background: transparent; border: none; }
+.refresh-btn:hover { background: rgba(255,255,255,0.1); }
+
+/* Main Card */
+.current-weather-card {
+    background: var(--card-gradient);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-header h2 { font-size: 1.3rem; font-weight: 500; }
+.current-time-cond { font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 5px; }
+
+.main-temp-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.main-icon { width: 90px; height: 90px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+
+.temp-wrapper h1 { font-size: 3.5rem; font-weight: 600; line-height: 1; }
+.temp-wrapper p { font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-top: 5px; }
+
+.card-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.stat-box {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    border-radius: 12px;
+    flex: 1;
+}
+
+.stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-bottom: 5px; }
+.stat-value { font-size: 1.1rem; font-weight: 600; }
+
+.card-footer {
+    text-align: center;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 10px;
+}
+
+/* Forecast Sections */
+.forecast-section { margin-top: 10px; }
+.section-title { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; letter-spacing: 1px;}
+
+.hourly-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding-bottom: 10px;
+    scrollbar-width: none;
+}
+.hourly-container::-webkit-scrollbar { display: none; }
+
+.hourly-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.precip-chance { font-size: 0.7rem; color: #4facfe; font-weight: 600;}
+.small-icon { width: 35px; height: 35px; }
+
+.daily-container {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.daily-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.daily-day { width: 90px; }
+.daily-icon-group { display: flex; align-items: center; width: 60px; gap: 5px; }
+.temp-bar {
+    flex: 1;
+    height: 6px;
+    background: linear-gradient(90deg, #4facfe 0%, #ff0844 100%);
+    border-radius: 3px;
+    margin: 0 15px;
+    opacity: 0.8;
+}
+
+/* Utilities */
+.hidden { display: none !important; }
+.state-message { text-align: center; margin-top: 50px; color: var(--text-muted); }
+.text-danger { color: #ff4d4d; }
+footer { text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: auto; padding-top: 20px; }
+footer a { color: var(--text-muted); }

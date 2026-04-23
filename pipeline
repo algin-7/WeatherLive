@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clone') {
+            steps {
+                git branch: 'main', url: 'https://github.com/algin-7/WeatherLive.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'Building WeatherLive project...'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                bat 'if not exist C:\\deploy mkdir C:\\deploy'
+		bat 'xcopy * C:\\deploy /E /I /Y'
+            }
+        }
+    }
+}
