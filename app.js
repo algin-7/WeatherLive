@@ -1,3 +1,4 @@
+// --- DOM Elements ---
 const cityInput = document.getElementById('city-input');
 const locationBtn = document.getElementById('location-btn');
 const refreshBtn = document.getElementById('refresh-btn');
@@ -5,9 +6,102 @@ const weatherContent = document.getElementById('weather-content');
 const loadingText = document.getElementById('loading');
 const errorText = document.getElementById('error');
 
-let activeState = { name: 'Nagercoil', country: 'India', lat: 8.1833, lon: 77.4119 }; // Defaults to Nagercoil
+// SPA Elements
+const loginView = document.getElementById('login-view');
+const dashboardView = document.getElementById('dashboard-view');
+const historyView = document.getElementById('history-view');
+const loginForm = document.getElementById('login-form');
+const openHistoryBtn = document.getElementById('open-history-btn');
+const closeHistoryBtn = document.getElementById('close-history-btn');
+const clearHistoryBtn = document.getElementById('clear-history-btn');
+const logoutBtn = document.getElementById('logout-btn');
 
-// WMO Weather code mapping to text and OpenWeather Icons (for that clean look)
+let activeState = { name: 'London', country: 'United Kingdom', lat: 51.5074, lon: -0.1278 };
+
+// --- SPA & History Logic ---
+function showView(view) {
+    loginView.classList.add('hidden');
+    dashboardView.classList.add('hidden');
+    historyView.classList.add('hidden');
+    view.classList.remove('hidden');
+}
+
+function initApp() {
+    const user = localStorage.getItem('weatherUser');
+    if (user) {
+        document.getElementById('user-display-name').innerText = user;
+        showView(dashboardView);
+        
+        // Load last searched city from history, else use default
+        const history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
+        if (history.length > 0) {
+            searchCity(history[0]);
+        } else {
+            fetchWeather(); 
+        }
+    } else {
+        showView(loginView);
+    }
+}
+
+loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const username = document.getElementById('username-input').value.trim();
+    localStorage.setItem('weatherUser', username);
+    initApp();
+});
+
+openHistoryBtn.addEventListener('click', () => {
+    renderHistory();
+    showView(historyView);
+});
+
+closeHistoryBtn.addEventListener('click', () => showView(dashboardView));
+
+clearHistoryBtn.addEventListener('click', () => {
+    localStorage.removeItem('weatherHistory');
+    renderHistory();
+});
+
+logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('weatherUser');
+    showView(loginView);
+});
+
+function addToHistory(city) {
+    if (!city) return;
+    let history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
+    // Remove if already exists so it jumps to top
+    history = history.filter(c => c.toLowerCase() !== city.toLowerCase());
+    history.unshift(city);
+    // Keep max 5 items
+    if (history.length > 5) history.pop(); 
+    localStorage.setItem('weatherHistory', JSON.stringify(history));
+}
+
+function renderHistory() {
+    const history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
+    const list = document.getElementById('history-list');
+    list.innerHTML = '';
+    
+    if (history.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: var(--text-muted); margin-top: 10px;">No recent searches.</p>';
+        return;
+    }
+
+    history.forEach(city => {
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        li.innerHTML = `<span>${city}</span> <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-muted);"></i>`;
+        li.addEventListener('click', () => {
+            showView(dashboardView);
+            searchCity(city);
+        });
+        list.appendChild(li);
+    });
+}
+
+// --- Original Weather Logic ---
 function getWeatherMeta(code, isDay = 1) {
     const timeCode = isDay ? 'd' : 'n';
     const map = {
@@ -39,13 +133,11 @@ function getWeatherMeta(code, isDay = 1) {
     return map[code] || { text: "Unknown", icon: `03${timeCode}` };
 }
 
-// Format time
 function formatTime(isoString) {
     const date = new Date(isoString);
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 }
 
-// Fetch coordinates via Geocoding API
 async function searchCity(city) {
     if (!city) return;
     setLoadingState(true);
@@ -63,13 +155,13 @@ async function searchCity(city) {
             lon: data.results[0].longitude
         };
         
+        addToHistory(activeState.name); // Save to history
         fetchWeather();
     } catch (e) {
         setLoadingState(false, true);
     }
 }
 
-// Fetch complete weather data
 async function fetchWeather() {
     setLoadingState(true);
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${activeState.lat}&longitude=${activeState.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,surface_pressure,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto`;
@@ -87,8 +179,7 @@ function updateUI(data) {
     const current = data.current;
     const meta = getWeatherMeta(current.weather_code, current.is_day);
     
-    // Update Main Card
-    document.getElementById('current-location').innerText = `${activeState.name}, ${activeState.country}`;
+    document.getElementById('current-location').innerText = `${activeState.name}, ${activeState.country || ''}`;
     document.getElementById('current-time').innerText = formatTime(current.time);
     document.getElementById('current-condition').innerText = meta.text;
     document.getElementById('current-temp').innerText = `${Math.round(current.temperature_2m)}°`;
@@ -101,11 +192,9 @@ function updateUI(data) {
     const now = new Date();
     document.getElementById('last-updated').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
-    // Update Hourly (Next 8 hours)
     const hourlyContainer = document.getElementById('hourly-forecast');
     hourlyContainer.innerHTML = '';
     
-    // Find current hour index
     const currentHourISO = current.time.substring(0, 14) + "00";
     let startIndex = data.hourly.time.findIndex(t => t.startsWith(currentHourISO));
     if(startIndex === -1) startIndex = 0;
@@ -126,7 +215,6 @@ function updateUI(data) {
         `;
     }
 
-    // Update 7-Day Daily
     const dailyContainer = document.getElementById('daily-forecast');
     dailyContainer.innerHTML = '';
     
@@ -176,7 +264,7 @@ function setLoadingState(isLoading, isError = false) {
     }
 }
 
-// Event Listeners
+// --- Event Listeners ---
 cityInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') searchCity(cityInput.value.trim());
 });
@@ -190,11 +278,11 @@ locationBtn.addEventListener('click', () => {
             async (position) => {
                 activeState.lat = position.coords.latitude;
                 activeState.lon = position.coords.longitude;
-                // Reverse geocode to get city name
                 const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${activeState.lat}&longitude=${activeState.lon}&localityLanguage=en`);
                 const data = await res.json();
                 activeState.name = data.city || data.locality || 'Current Location';
                 activeState.country = data.countryName || '';
+                addToHistory(activeState.name);
                 fetchWeather();
             },
             () => { alert("Location access denied or unavailable."); setLoadingState(false, false); }
@@ -204,8 +292,7 @@ locationBtn.addEventListener('click', () => {
     }
 });
 
-// Auto-update every 5 minutes (300,000 ms)
 setInterval(fetchWeather, 300000);
 
-// Initialize with Nagercoil on load
-fetchWeather();
+// Start the App
+initApp();

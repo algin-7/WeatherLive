@@ -8,80 +8,117 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <div class="logo">
+
+    <div id="login-view" class="view-section hidden">
+        <div class="auth-card">
+            <div class="logo" style="margin-bottom: 20px; font-size: 1.5rem; text-align: center;">
                 <i class="fa-solid fa-cloud-sun text-warning"></i> LiveWeather
             </div>
-            <div class="search-container">
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" id="city-input" placeholder="Search city..." autocomplete="off">
-            </div>
-            <button id="location-btn" class="icon-btn" title="Current Location">
-                <i class="fa-solid fa-location-crosshairs"></i>
-            </button>
-        </header>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px;">Welcome! Please enter a display name.</p>
+            <form id="login-form">
+                <input type="text" id="username-input" placeholder="e.g., Guest User" required autocomplete="off" style="margin-bottom: 15px; width: 100%;">
+                <button type="submit" style="width: 100%; padding: 12px; border-radius: 20px; border: none; background: var(--card-gradient); color: white; cursor: pointer; font-weight: bold;">Enter Dashboard</button>
+            </form>
+        </div>
+    </div>
 
-        <main id="weather-content" class="hidden">
-            <section class="current-weather-card">
-                <div class="card-header">
-                    <div>
-                        <h2 id="current-location">City, Country</h2>
-                        <p class="current-time-cond"><span id="current-time">00:00 PM</span> • <span id="current-condition">Condition</span></p>
-                    </div>
-                    <button id="refresh-btn" class="icon-btn refresh-btn"><i class="fa-solid fa-rotate"></i></button>
+    <div id="dashboard-view" class="view-section hidden">
+        <div class="app-container">
+            <header>
+                <div class="logo">
+                    <i class="fa-solid fa-cloud-sun text-warning"></i> LiveWeather
                 </div>
+                <div class="search-container">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="city-input" placeholder="Search city..." autocomplete="off">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button id="location-btn" class="icon-btn" title="Current Location">
+                        <i class="fa-solid fa-location-crosshairs"></i>
+                    </button>
+                    <button id="open-history-btn" class="icon-btn" title="Search History">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </button>
+                </div>
+            </header>
 
-                <div class="card-body">
-                    <div class="main-temp-section">
-                        <img id="current-icon" src="" alt="Weather Icon" class="main-icon">
-                        <div class="temp-wrapper">
-                            <h1 id="current-temp">0°</h1>
-                            <p>Feels like <span id="feels-like">0°</span></p>
+            <div class="user-greeting" style="padding: 0 5px;">
+                <p style="font-size: 1.05rem;">Hello, <span id="user-display-name" class="text-warning">User</span>!</p>
+            </div>
+
+            <main id="weather-content" class="hidden">
+                <section class="current-weather-card">
+                    <div class="card-header">
+                        <div>
+                            <h2 id="current-location">City, Country</h2>
+                            <p class="current-time-cond"><span id="current-time">00:00 PM</span> • <span id="current-condition">Condition</span></p>
+                        </div>
+                        <button id="refresh-btn" class="icon-btn refresh-btn"><i class="fa-solid fa-rotate"></i></button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="main-temp-section">
+                            <img id="current-icon" src="" alt="Weather Icon" class="main-icon">
+                            <div class="temp-wrapper">
+                                <h1 id="current-temp">0°</h1>
+                                <p>Feels like <span id="feels-like">0°</span></p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="card-stats">
-                    <div class="stat-box">
-                        <p class="stat-label"><i class="fa-solid fa-droplet"></i> Humidity</p>
-                        <p class="stat-value" id="humidity">0%</p>
+                    <div class="card-stats">
+                        <div class="stat-box">
+                            <p class="stat-label"><i class="fa-solid fa-droplet"></i> Humidity</p>
+                            <p class="stat-value" id="humidity">0%</p>
+                        </div>
+                        <div class="stat-box">
+                            <p class="stat-label"><i class="fa-solid fa-wind"></i> Wind</p>
+                            <p class="stat-value"><span id="wind-speed">0</span> km/h</p>
+                        </div>
+                        <div class="stat-box">
+                            <p class="stat-label"><i class="fa-solid fa-gauge-high"></i> Pressure</p>
+                            <p class="stat-value"><span id="pressure">0</span> hPa</p>
+                        </div>
                     </div>
-                    <div class="stat-box">
-                        <p class="stat-label"><i class="fa-solid fa-wind"></i> Wind</p>
-                        <p class="stat-value"><span id="wind-speed">0</span> km/h</p>
+
+                    <div class="card-footer">
+                        Updated <span id="last-updated">00:00 PM</span> • Auto-refreshes every 5 min
                     </div>
-                    <div class="stat-box">
-                        <p class="stat-label"><i class="fa-solid fa-gauge-high"></i> Pressure</p>
-                        <p class="stat-value"><span id="pressure">0</span> hPa</p>
-                    </div>
-                </div>
+                </section>
 
-                <div class="card-footer">
-                    Updated <span id="last-updated">00:00 PM</span> • Auto-refreshes every 5 min
-                </div>
-            </section>
+                <section class="forecast-section">
+                    <h3 class="section-title">HOURLY FORECAST</h3>
+                    <div class="hourly-container" id="hourly-forecast"></div>
+                </section>
 
-            <section class="forecast-section">
-                <h3 class="section-title">HOURLY FORECAST</h3>
-                <div class="hourly-container" id="hourly-forecast">
-                    </div>
-            </section>
+                <section class="forecast-section">
+                    <h3 class="section-title">7-DAY FORECAST</h3>
+                    <div class="daily-container" id="daily-forecast"></div>
+                </section>
+            </main>
 
-            <section class="forecast-section">
-                <h3 class="section-title">7-DAY FORECAST</h3>
-                <div class="daily-container" id="daily-forecast">
-                    </div>
-            </section>
-        </main>
+            <div id="loading" class="state-message">Fetching weather data...</div>
+            <div id="error" class="state-message hidden text-danger">Location not found. Please try again.</div>
 
-        <div id="loading" class="state-message">Fetching weather data...</div>
-        <div id="error" class="state-message hidden text-danger">Location not found. Please try again.</div>
-
-        <footer>
-            Powered by <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a> • Weather data updates automatically every 5 minutes
-        </footer>
+            <footer>
+                Powered by <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a> • Weather data updates automatically every 5 minutes
+            </footer>
+        </div>
     </div>
+
+    <div id="history-view" class="view-section hidden">
+        <div class="auth-card">
+            <button id="close-history-btn" style="background: none; border: none; color: var(--text-muted); cursor: pointer; margin-bottom: 20px;"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+            <h2 style="text-align: center; margin-bottom: 20px; font-weight: 500;">Recent Searches</h2>
+            
+            <ul id="history-list" class="history-list">
+                </ul>
+
+            <button type="button" id="clear-history-btn" style="width: 100%; padding: 12px; margin-top: 15px; border-radius: 20px; border: 1px solid #ff4d4d; background: #3a1c1c; color: #ff4d4d; cursor: pointer; transition: 0.2s;">Clear History</button>
+            <button type="button" id="logout-btn" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 20px; border: 1px solid #333; background: #1e1e1e; color: white; cursor: pointer; transition: 0.2s;">Log Out</button>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>

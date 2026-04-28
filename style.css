@@ -200,3 +200,54 @@ input:focus { border-color: #555; }
 .text-danger { color: #ff4d4d; }
 footer { text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: auto; padding-top: 20px; }
 footer a { color: var(--text-muted); }
+/* --- SPA & Auth Modifications --- */
+.view-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+#login-view, #history-view {
+    align-items: center;
+}
+
+.auth-card {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid #333;
+}
+
+.history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+    border: 1px solid #333;
+    font-size: 0.95rem;
+}
+
+.history-item:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+#clear-history-btn:hover { background-color: #ff4d4d !important; color: white !important; }
+#logout-btn:hover { background-color: #333 !important; }
